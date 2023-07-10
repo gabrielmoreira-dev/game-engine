@@ -1,18 +1,17 @@
-protocol RouterType {
-    typealias Completion = (String) -> Void
+final class Flow<Question, Answer, R: Routing> where R.Question == Question, R.Answer == Answer {
+    private let router: R
+    private let questions: [Question]
+    private var answers: [Question: Answer] = [:]
+    private let scoring: ([Question: Answer]) -> Int
     
-    func routeTo(question: String, completion: @escaping Completion)
-    func routeTo(result: [String: String])
-}
-
-final class Flow {
-    private let router: RouterType
-    private let questions: [String]
-    private var result: [String: String] = [:]
-    
-    init(router: RouterType, questions: [String] = []) {
+    init(
+        router: R,
+        questions: [Question] = [],
+        scoring: @escaping ([Question: Answer]) -> Int
+    ) {
         self.router = router
         self.questions = questions
+        self.scoring = scoring
     }
     
     func start() {
@@ -24,12 +23,16 @@ final class Flow {
 }
 
 private extension Flow {
-    func routeNext(from question: String) -> RouterType.Completion {
+    var result: GameResult<Question, Answer> {
+        GameResult(answers: answers, score: scoring(answers))
+    }
+    
+    func routeNext(from question: Question) -> (Answer) -> Void {
         { [weak self] in self?.routeNext(question: question, answer: $0) }
     }
     
-    func routeNext(question: String, answer: String) {
-        result[question] = answer
+    func routeNext(question: Question, answer: Answer) {
+        answers[question] = answer
         guard let questionIndex = self.questions.firstIndex(of: question),
               self.questions.count > questionIndex + 1 else {
             return router.routeTo(result: result)

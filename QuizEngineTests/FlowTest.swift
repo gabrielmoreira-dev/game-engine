@@ -86,7 +86,7 @@ final class FlowTest: XCTestCase {
         
         sut.start()
         
-        XCTAssertEqual(routerSpy.routedResult, [:])
+        XCTAssertEqual(routerSpy.routedResult?.answers, [:])
     }
     
     func testAnswerFirstQuestion_WhenOneQuestion_ShouldRouteToResult() {
@@ -96,7 +96,7 @@ final class FlowTest: XCTestCase {
         sut.start()
         routerSpy.completion("A1")
         
-        XCTAssertEqual(routerSpy.routedResult, ["Q1": "A1"])
+        XCTAssertEqual(routerSpy.routedResult?.answers, ["Q1": "A1"])
     }
     
     func testAnswerFirstAndSecondQuestion_WhenTwoQuestions_ShouldRouteToResult() {
@@ -107,27 +107,41 @@ final class FlowTest: XCTestCase {
         routerSpy.completion("A1")
         routerSpy.completion("A2")
         
-        XCTAssertEqual(routerSpy.routedResult, ["Q1": "A1", "Q2": "A2"])
+        XCTAssertEqual(routerSpy.routedResult?.answers, ["Q1": "A1", "Q2": "A2"])
+    }
+    
+    func testAnswerFirstAndSecondQuestion_WhenTwoQuestions_ShouldScore() {
+        let questions = ["Q1", "Q2"]
+        let sut = makeSUT(questions: questions) { _ in 10 }
+        
+        sut.start()
+        routerSpy.completion("A1")
+        routerSpy.completion("A2")
+        
+        XCTAssertEqual(routerSpy.routedResult?.score, 10)
+    }
+    
+    func testAnswerFirstAndSecondQuestion_WhenTwoQuestions_ShouldScoreWithRightAnswers() {
+        var receivedAnsers: [String:String] = [:]
+        let questions = ["Q1", "Q2"]
+        let sut = makeSUT(questions: questions) { answers in
+            receivedAnsers = answers
+            return 20
+        }
+        
+        sut.start()
+        routerSpy.completion("A1")
+        routerSpy.completion("A2")
+        
+        XCTAssertEqual(receivedAnsers,["Q1": "A1", "Q2": "A2"])
     }
 }
 
 private extension FlowTest {
-    func makeSUT(questions: [String] = []) -> Flow {
-        Flow(router: routerSpy, questions: questions)
-    }
-}
-
-private final class RouterSpy: RouterType {
-    private(set) var routedQuestions: [String] = []
-    private(set) var routedResult: [String: String]?
-    var completion: RouterType.Completion = { _ in }
-    
-    func routeTo(question: String, completion: @escaping (String) -> Void) {
-        routedQuestions.append(question)
-        self.completion = completion
-    }
-    
-    func routeTo(result: [String : String]) {
-        routedResult = result
+    func makeSUT(
+        questions: [String] = [],
+        scoring: @escaping ([String: String]) -> Int = { _ in 0 }
+    ) -> Flow<String, String, RouterSpy> {
+        Flow(router: routerSpy, questions: questions, scoring: scoring)
     }
 }
