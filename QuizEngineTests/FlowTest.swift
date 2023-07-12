@@ -1,4 +1,4 @@
-@testable import QuizEngine
+@testable import GMQuizEngine
 import XCTest
 
 final class FlowTest: XCTestCase {

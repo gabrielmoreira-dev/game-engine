@@ -1,0 +1,6 @@
+coverage_service: cobertura_xml
+xcodeproj: GMQuizEngine.xcodeproj
+scheme: GMQuizEngine
+output_directory: reports
+ignore:
+  - QuizEngineTests/*

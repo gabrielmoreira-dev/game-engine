@@ -1,5 +1,5 @@
+@testable import GMQuizEngine
 import XCTest
-@testable import QuizEngine
 
 final class GameTest: XCTestCase {
     private let router = RouterSpy()

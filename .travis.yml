@@ -7,4 +7,8 @@ env:
     - TEST_SDK=iphonesimulator16.2 OS=16.2 NAME='iPhone 14'
 
 script:
-  - set -o pipefail && xcodebuild test -enableCodeCoverage YES -project GMQuizEngine.xcodeproj -scheme GMQuizEngine -sdk $TEST_SDK -destination "platform=iOS Simulator,OS=$OS,name=$NAME" ONLY_ACTIVE_ARCH=YES 
+  - set -o pipefail && xcodebuild test -enableCodeCoverage YES -project GMQuizEngine.xcodeproj -scheme GMQuizEngine -sdk $TEST_SDK -destination "platform=iOS Simulator,OS=$OS,name=$NAME" ONLY_ACTIVE_ARCH=YES
+
+after_success:
+  - slather
+  - bash <(curl -s https://codecov.io/bash) -f reports/cobertura.xml -X coveragepy -X gcov -X xcode
