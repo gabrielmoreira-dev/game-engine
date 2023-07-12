@@ -1,4 +1,4 @@
-@testable import QuizEngine
+@testable import GMQuizEngine
 
 final class RouterSpy: Routing {
     private(set) var routedQuestions: [String] = []
