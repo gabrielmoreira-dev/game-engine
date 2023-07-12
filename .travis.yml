@@ -1,0 +1,10 @@
+language: objective-c
+
+osx_image: xcode14.3
+env:
+  matrix:
+    - TEST-SDK=iphonesimulator15.5 OS=15.5 NAME='iPhone XR'
+    - TEST_SDK=iphonesimulator15.5 OS=15.5 NAME='iPhone 8'
+
+script:
+  - set -o pipefail && xcodebuild test -enableCodeCoverage YES -project GMQuizEngine.xcodeproj -scheme GMQuizEngine -sdk $TEST_SDK -destination "platform=iOS Simulator,OS=$OS,name=$name" ONLY_ACTIVE_ARCH=YES 
