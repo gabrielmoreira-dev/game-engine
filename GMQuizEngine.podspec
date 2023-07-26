@@ -1,7 +1,7 @@
 Pod::Spec.new do |spec|
 
   spec.name         = "GMQuizEngine"
-  spec.version      = "0.0.3"
+  spec.version      = "1.0.0"
   spec.summary      = "Engine for the QuizApp"
 
   spec.description  = <<-DESC
