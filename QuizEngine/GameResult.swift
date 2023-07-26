@@ -1,4 +1,4 @@
 public struct GameResult<Question: Hashable, Answer: Equatable>: Equatable {
-    let answers: [Question: Answer]
-    let score: Int
+    public let answers: [Question: Answer]
+    public let score: Int
 }
